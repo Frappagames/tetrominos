@@ -4,7 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.frappagames.tetris.Tetris;
@@ -15,9 +18,11 @@ import com.frappagames.tetris.Tetris;
 abstract public class GameScreen implements Screen {
     private final OrthographicCamera camera;
     private final Viewport viewport;
-    private Tetris game;
+    public Tetris game;
     protected Stage stage;
     private Stage stage2;
+
+    private Image background;
 
     public GameScreen(Tetris game) {
         this.game = game;
@@ -28,7 +33,9 @@ abstract public class GameScreen implements Screen {
 
         camera.position.set(Tetris.WIDTH / 2, Tetris.HEIGHT / 2, 0);
 
-        Gdx.graphics.setContinuousRendering(false);
+        background = new Image(game.getAtlas().findRegion("background"));
+
+        Gdx.graphics.setContinuousRendering(true);
     }
 
     @Override
@@ -45,6 +52,10 @@ abstract public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
+
+        game.batch.begin();
+        background.draw(game.batch, 1);
+        game.batch.end();
 
         stage.act(delta);
         stage.draw();

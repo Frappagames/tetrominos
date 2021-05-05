@@ -14,7 +14,7 @@ import com.frappagames.tetris.Tools.Settings;
 public class Tetris extends Game {
 	public SpriteBatch batch;
 	public Color clearColor;
-	public static int WIDTH = 800;
+	public static int WIDTH = 720;
 	public static int HEIGHT = 1280;
 	public TextureAtlas atlas;
 

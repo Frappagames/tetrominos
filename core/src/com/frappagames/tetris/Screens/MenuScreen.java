@@ -24,69 +24,65 @@ import com.frappagames.tetris.Tools.GameScreen;
 public class MenuScreen extends GameScreen {
     private static final String WEBSITE_LINK = "http://frappagames.itch.io";
     private final BitmapFont font;
+    private Image background;
+    private Image menuBackground;
 
     public MenuScreen(final Tetris game) {
         super(game);
 
-        Image titleImg = new Image(game.getAtlas().findRegion("title_big"));
-        Image authorImg = new Image(game.getAtlas().findRegion("author"));
-
         Skin skin = new Skin();
         skin.addRegions(game.getAtlas());
 
-        font = new BitmapFont(Gdx.files.internal("cooper-40-white.fnt"), false);
-        BitmapFont font32 = new BitmapFont(Gdx.files.internal("cooper-32-white.fnt"), false);
+        font = new BitmapFont(Gdx.files.internal("xolonium-48.fnt"), false);
+        menuBackground = new Image(game.getAtlas().findRegion("menu-background"));
 
-        TextButtonStyle redBtnSkin = new TextButtonStyle();
-        redBtnSkin.font = font;
-        redBtnSkin.up = skin.getDrawable("btn_red");
-        redBtnSkin.down = skin.getDrawable("btn_gray");
+        Image titleImg = new Image(game.getAtlas().findRegion("logo"));
 
-        TextButtonStyle yellowBtnSkin = new TextButtonStyle();
-        yellowBtnSkin.font = font;
-        yellowBtnSkin.up = skin.getDrawable("btn_yellow");
-        yellowBtnSkin.down = skin.getDrawable("btn_gray");
+        TextButtonStyle bluedBtnSkin = new TextButtonStyle();
+        bluedBtnSkin.font = font;
+        bluedBtnSkin.up = skin.getDrawable("btn-blue-default");
+        bluedBtnSkin.down = skin.getDrawable("btn-blue-clicked");
+        bluedBtnSkin.over = skin.getDrawable("btn-blue-over");
 
         TextButtonStyle brownBtnSkin = new TextButtonStyle();
         brownBtnSkin.font = font;
-        brownBtnSkin.up = skin.getDrawable("btn_brown");
-        brownBtnSkin.down = skin.getDrawable("btn_gray");
+        brownBtnSkin.up = skin.getDrawable("btn-orange-default");
+        brownBtnSkin.down = skin.getDrawable("btn-orange-clicked");
+        brownBtnSkin.over = skin.getDrawable("btn-orange-over");
 
+        TextButton playBtn = new TextButton("PLAY", bluedBtnSkin);
+        TextButton options = new TextButton("OPTIONS", bluedBtnSkin);
+        TextButton scoreBtn = new TextButton("SCORES", bluedBtnSkin);
+        TextButton healpBtn = new TextButton("HELP", bluedBtnSkin);
+        TextButton aboutBtn = new TextButton("ABOUT", bluedBtnSkin);
+        TextButton exitBtn = new TextButton("EXIT", brownBtnSkin);
 
-        TextButton classicGameBtn = new TextButton("Partie classique", yellowBtnSkin);
-        TextButton timeGameBtn = new TextButton("Contre-la-montre", redBtnSkin);
-        TextButton scoreBtn = new TextButton("Meilleurs scores", brownBtnSkin);
-        TextButton howToPlayBtn = new TextButton("Comment jouer", brownBtnSkin);
-        TextButton aboutBtn = new TextButton("A propos de 2048", brownBtnSkin);
-        TextButton exitBtn = new TextButton("Quitter", redBtnSkin);
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle(font32, Color.valueOf("#5F594EFF"));
-        Label.LabelStyle labelStyleLink = new Label.LabelStyle(font32, Color.valueOf("#AFA08FFF"));
-        Label moreGamesLbl = new Label("Plus de jeux sur ", labelStyle);
-        Label linkLbl = new Label(WEBSITE_LINK, labelStyleLink);
-        linkLbl.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.net.openURI(WEBSITE_LINK);
-            }
-        });
+        Image authorImg = new Image(game.getAtlas().findRegion("signature"));
 
         Table table = new Table();
         table.setFillParent(true);
-        table.add(titleImg).pad(30, 0, 50, 0).row();
-        table.add(classicGameBtn).pad(15).row();
-        table.add(timeGameBtn).pad(15, 15, 50, 15).row();
-//        table.add(scoreBtn).pad(15).row();
-        table.add(howToPlayBtn).pad(15).row();
-        table.add(aboutBtn).pad(15, 15, 15, 15).row();
-        table.add(exitBtn).pad(50).row();
-        table.add().height(50).row();
-        table.add(authorImg).pad(15, 0, 15, 0).row();
-        table.add(moreGamesLbl).pad(0, 0, 0, 0).row();
-        table.add(linkLbl).pad(0, 0, 15, 0).row();
+        table.add(titleImg).pad(60, 0, 145, 0).row();
+        table.add(playBtn).pad(15).row();
+        table.add(options).pad(15).row();
+        table.add(healpBtn).pad(15).row();
+        table.add(aboutBtn).pad(15).row();
+        table.add(exitBtn).pad(45, 15, 135, 15).row();
+        table.add(authorImg).pad(15, 0, 0, 0).row();
 
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
+
+        playBtn.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new PlayScreen(game));
+            }
+        });
+
+        options.addListener(new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new OptionsScreen(game));
+            }
+        });
 
         scoreBtn.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
@@ -94,7 +90,7 @@ public class MenuScreen extends GameScreen {
             }
         });
 
-        howToPlayBtn.addListener(new ChangeListener() {
+        healpBtn.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
                 game.setScreen(new HowToPlayScreen(game));
             }
@@ -111,6 +107,13 @@ public class MenuScreen extends GameScreen {
                 Gdx.app.exit();
             }
         });
+
+        authorImg.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.net.openURI(WEBSITE_LINK);
+            }
+        });
     }
 
     @Override
@@ -120,6 +123,11 @@ public class MenuScreen extends GameScreen {
 
     @Override
     public void draw(float delta) {
+        game.batch.begin();
+        menuBackground.setPosition(95, 240);
+        menuBackground.draw(game.batch, 1);
+        game.batch.end();
+
         stage.draw();
     }
 
